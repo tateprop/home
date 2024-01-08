@@ -78,7 +78,6 @@ class Lights:
 
     def executeRule(self, id):
         self.postRequest(f"https://api.smartthings.com/v1/rules/execute/{id}?locationId={LOCATION_ID}", {})
-        requests.delete(f"https://api.smartthings.com/v1/rules/{id}?locationId={LOCATION_ID}", headers=self.headers)
 
     def purgeRules(self):
         r = self.getRequest(f"https://api.smartthings.com/v1/rules?locationId={LOCATION_ID}")
@@ -86,26 +85,41 @@ class Lights:
         for id in ids:
             requests.delete(f"https://api.smartthings.com/v1/rules/{id}?locationId={LOCATION_ID}", headers=self.headers)
 
+    def runPattern(self, pattern):
+        pass
+    
     def programLights(self, lights, hue=None, saturation=100, brightness=None):
-        gap = 0.1
-        start = time.time()
         data = self.formatData(hue, saturation, brightness)
         devices = [self.device_list[light] for light in lights]
         id = self.createRule(data, devices)
-        while True:
-            if time.time() > start + self.sync + gap:
-                print("dropped")
-                return
-            if time.time() > start + self.sync:
-                self.executeRule(id)
-                return
+        self.executeRule(id)
+        
         
 
 lightsa = [[0,1,2],[3,4],[5,6],[7,8],[9,10],[11,12]]
 interval = 1
 
 lights = Lights()
-lights.programLights([0,1], brightness=5, hue=0)
+#lights.programLights([0,1], brightness=5, hue=0)
+pattern = {
+    "actions" : [
+        {"lights":[0,1,2], "brightness":20, "hue":0, "wait":1},
+        {"lights":[0,1,2], "brightness":0, "wait":1},
+        {"lights":[3,4], "brightness":20, "hue":20, "wait":1},
+        {"lights":[3,4], "brightness":0, "wait":1},
+        {"lights":[5,6], "brightness":20, "hue":40, "wait":1},
+        {"lights":[5,6], "brightness":0, "wait":1},
+        {"lights":[7,8], "brightness":20, "hue":60, "wait":1},
+        {"lights":[7,8], "brightness":0, "wait":1},
+        {"lights":[9,10], "brightness":20, "hue":80, "wait":1},
+        {"lights":[9,10], "brightness":0, "wait":1},
+        {"lights":[11,12], "brightness":20, "hue":100, "wait":1},
+        {"lights":[11,12], "brightness":0, "wait":1},
+    ],
+    "mode" : "loop"
+}
+
+
 #lights.purgeRules()
 # while True:
 #     for index, x in enumerate(lightsa):
