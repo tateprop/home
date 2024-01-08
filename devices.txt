@@ -1,0 +1,210 @@
+Device List: [{'name': 'GU10 Smart Bulb 2', 'id': 'bfb31d23df1030f9049gz9', 'key': 'j4O#c{)u_;5>%E)D', 'mac': '18:de:50:61:ca:89', 'uuid': '60915b510fa494a1', 'category': 'dj', 'product_name': 'GU10 Smart Bulb', 'product_id': 'yyi07qf1sfqnxwaa', 'biz_type': 18, 'model': 'ALS23L ', 'sub': False, 'icon': 'https://images.tuyaeu.com/smart/icon/ay1488250737181CTA8y/fce84ac5d5bc485ec6cd7bcd76b2c40c.png'}, {'name': 'Light bulb', 'id': 'bf3b148c08c6c4d4bcphqh', 'key': "='*#8DH6s-1F9w+T", 'mac': '18:de:50:61:97:f2', 'uuid': '5b6ac4fa43e516e7', 'category': 'dj', 'product_name': 'GU10 Smart Bulb', 'product_id': 'yyi07qf1sfqnxwaa', 'biz_type': 18, 'model': 'ALS23L ', 'sub': False, 'icon': 'https://images.tuyaeu.com/smart/icon/ay1488250737181CTA8y/fce84ac5d5bc485ec6cd7bcd76b2c40c.png'}, {'name': 'GU10 Smart Bulb 3', 'id': 'bf6220c62be06c856cfegn', 'key': 'vphI:/-lqP{`c}!X', 'mac': '18:de:50:61:9d:a5', 'uuid': 'ecb501c386402fe2', 'category': 'dj', 'product_name': 'GU10 Smart Bulb', 'product_id': 'yyi07qf1sfqnxwaa', 'biz_type': 18, 'model': 'ALS23L ', 'sub': False, 'icon': 'https://images.tuyaeu.com/smart/icon/ay1488250737181CTA8y/fce84ac5d5bc485ec6cd7bcd76b2c40c.png'}, {'name': 'GU10 Smart Bulb 4', 'id': 'bff753a0f3658747b8dfz7', 'key': "c3hne)R'n9rRibGR", 'mac': '18:de:50:61:9a:9e', 'uuid': '26cd8971a25bacfe', 'category': 'dj', 'product_name': 'GU10 Smart Bulb', 'product_id': 'yyi07qf1sfqnxwaa', 'biz_type': 18, 'model': 'ALS23L ', 'sub': False, 'icon': 'https://images.tuyaeu.com/smart/icon/ay1488250737181CTA8y/fce84ac5d5bc485ec6cd7bcd76b2c40c.png'}]
+
+GU10 Smart Bulb 2
+18:de:50:61:ca:89
+192.168.1.65
+
+Nmap scan report for 192.168.1.3
+Host is up (0.0010s latency).
+Not shown: 997 closed ports
+PORT      STATE SERVICE
+80/tcp    open  http
+554/tcp   open  rtsp
+49152/tcp open  unknown
+
+Nmap scan report for 192.168.1.5
+Host is up (0.0018s latency).
+Not shown: 998 closed ports
+PORT     STATE SERVICE
+80/tcp   open  http
+4242/tcp open  vrml-multi-use
+
+Nmap scan report for 192.168.1.11
+Host is up (0.00047s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for 192.168.1.12
+Host is up (0.00049s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for 192.168.1.13
+Host is up (0.00065s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for 192.168.1.14
+Host is up (0.00057s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for 192.168.1.15
+Host is up (0.00080s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for 192.168.1.16
+Host is up (0.00075s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for 192.168.1.17
+Host is up (0.00090s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for 192.168.1.18
+Host is up (0.00092s latency).
+Not shown: 999 closed ports
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+Nmap scan report for 192.168.1.30
+Host is up (0.00080s latency).
+All 1000 scanned ports on 192.168.1.30 are closed
+
+Nmap scan report for 192.168.1.32
+Host is up (0.00064s latency).
+All 1000 scanned ports on 192.168.1.32 are closed
+
+Nmap scan report for 192.168.1.33
+Host is up (0.00056s latency).
+All 1000 scanned ports on 192.168.1.33 are closed
+
+Nmap scan report for 192.168.1.37
+Host is up (0.021s latency).
+Not shown: 998 closed ports
+PORT      STATE SERVICE
+49152/tcp open  unknown
+62078/tcp open  iphone-sync
+
+Nmap scan report for 192.168.1.38
+Host is up (0.00068s latency).
+Not shown: 999 closed ports
+PORT     STATE SERVICE
+1443/tcp open  ies-lm
+
+Nmap scan report for 192.168.1.39
+Host is up (0.080s latency).
+Not shown: 999 closed ports
+PORT     STATE SERVICE
+6668/tcp open  irc
+
+Nmap scan report for 192.168.1.40
+Host is up (0.0011s latency).
+Not shown: 998 closed ports
+PORT     STATE SERVICE
+1443/tcp open  ies-lm
+7000/tcp open  afs3-fileserver
+
+Nmap scan report for 192.168.1.43
+Host is up (0.00062s latency).
+Not shown: 999 closed ports
+PORT     STATE SERVICE
+1443/tcp open  ies-lm
+
+Nmap scan report for 192.168.1.44
+Host is up (0.00073s latency).
+Not shown: 999 closed ports
+PORT     STATE SERVICE
+1443/tcp open  ies-lm
+
+Nmap scan report for 192.168.1.45
+Host is up (0.00062s latency).
+Not shown: 999 closed ports
+PORT     STATE SERVICE
+1443/tcp open  ies-lm
+
+Nmap scan report for 192.168.1.46
+Host is up (0.00087s latency).
+Not shown: 999 closed ports
+PORT     STATE SERVICE
+1443/tcp open  ies-lm
+
+Nmap scan report for 192.168.1.47
+Host is up (0.0048s latency).
+Not shown: 998 closed ports
+PORT      STATE SERVICE
+49152/tcp open  unknown
+62078/tcp open  iphone-sync
+
+Nmap scan report for 192.168.1.48
+Host is up (0.0046s latency).
+Not shown: 999 closed ports
+PORT      STATE SERVICE
+62078/tcp open  iphone-sync
+
+Nmap scan report for DESKTOP-GJ2UL3U (192.168.1.50)
+Host is up (0.00052s latency).
+All 1000 scanned ports on DESKTOP-GJ2UL3U (192.168.1.50) are filtered
+
+Nmap scan report for 192.168.1.53
+Host is up (0.046s latency).
+Not shown: 998 closed ports
+PORT      STATE SERVICE
+49152/tcp open  unknown
+62078/tcp open  iphone-sync
+
+Nmap scan report for DESKTOP-GJ2UL3U (192.168.1.54)
+Host is up (0.0012s latency).
+All 1000 scanned ports on DESKTOP-GJ2UL3U (192.168.1.54) are filtered
+
+Nmap scan report for 192.168.1.60
+Host is up (0.0013s latency).
+All 1000 scanned ports on 192.168.1.60 are closed
+
+Nmap scan report for 192.168.1.61
+Host is up (0.041s latency).
+Not shown: 999 closed ports
+PORT     STATE SERVICE
+6668/tcp open  irc
+
+Nmap scan report for 192.168.1.62
+Host is up (0.059s latency).
+Not shown: 999 closed ports
+PORT     STATE SERVICE
+6668/tcp open  irc
+
+Nmap scan report for 192.168.1.65
+Host is up (0.014s latency).
+Not shown: 999 closed ports
+PORT     STATE SERVICE
+6668/tcp open  irc
+
+Nmap scan report for 192.168.1.68
+Host is up (0.0056s latency).
+Not shown: 997 closed ports
+PORT      STATE SERVICE
+49152/tcp open  unknown
+49158/tcp open  unknown
+62078/tcp open  iphone-sync
+
+Nmap scan report for 192.168.1.231
+Host is up (0.00058s latency).
+Not shown: 994 closed ports
+PORT     STATE SERVICE
+80/tcp   open  http
+443/tcp  open  https
+515/tcp  open  printer
+631/tcp  open  ipp
+8080/tcp open  http-proxy
+9100/tcp open  jetdirect
+
+Nmap scan report for MiddleFloor (192.168.1.232)
+Host is up (0.00052s latency).
+Not shown: 994 closed ports
+PORT     STATE SERVICE
+80/tcp   open  http
+443/tcp  open  https
+631/tcp  open  ipp
+8080/tcp open  http-proxy
+9100/tcp open  jetdirect
+9220/tcp open  unknown
