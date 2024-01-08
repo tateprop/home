@@ -2,27 +2,26 @@
 from multiprocessing import Pool
 import time
 import threading
-import grequests
 import requests
+import random
+import string
 
-TOKEN = 'c4eafb11-cf60-4cc2-a85e-f8f489f6b798'
-
+TOKEN = 'a4bb4fa8-2510-4a2b-80e5-6c3c47badad5'
+LOCATION_ID = "19b8c253-a92c-4727-8110-bb84808a6402"
 
 class Lights:
     def __init__(self):
         self.headers = {"Authorization": f'Bearer {TOKEN}'}
         self.device_list = self.getDevices()
-        self.sync = 0.01
+        self.sync = 1
         
     def getRequest(self, url):
         return requests.get(url, headers = self.headers).json()
         
-    def postRequest(self, *args):
-        args = args[0]
-        num = self.device_list.index(args[0].split("/")[5])
-        d = [x["arguments"] for x in args[1]["commands"]]
-        print(f"Updated {num} with data {d} at {time.time()}")
-        r = requests.post(args[0], json=args[1], headers=self.headers)
+    def postRequest(self, url, data):
+        r = requests.post(url, json=data, headers=self.headers)
+        print(r.json())
+        return r.json()
 
 
     def getDevices(self):
@@ -34,59 +33,88 @@ class Lights:
         return ids
 
     def formatData(self, hue, saturation, brightness):
-        
-        data = {
-            "commands": [
+        data = [
                 {
                 "component": "main",
                 "capability": "colorControl",
                 "command": "setColor",
-                "arguments": [{
-                    "hue": hue,
-                    "saturation":saturation,
+                "arguments":[{
+							"map": {
+								"saturation": {
+									"integer": saturation
+								},
+								"hue": {
+									"integer": hue
+								}
+							}
                 }]
                 },
                 {
                 "component": "main",
                 "capability": "switchLevel",
                 "command": "setLevel",
-                "arguments": [brightness]
+                "arguments": [{"integer": brightness}]
                 },
             ]
-        }
         if hue is None:
             data["commands"] = [data["commands"][1]]
         
         return data
 
-    def programLights(self, lights, hue=None, saturation=100, brightness=None):
-        startTime = time.time()
-        data = self.formatData(hue, saturation, brightness)
-        # for light in lights:
-        #     url = f"https://api.smartthings.com/v1/devices/{self.device_list[light]}/commands"
-        #     t1 = threading.Thread(target=self.postRequest, args=(url, data,))
-        #     t1.start()
-        # t1.join()
-        # args = [[f"https://api.smartthings.com/v1/devices/{self.device_list[light]}/commands", data] for light in lights]
-        # with Pool(len(lights)) as p:
-        #     p.map(self.postRequest, args)
+    def createRule(self, data, devices):
+        name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
+        completeData = {
+            "name" : name,
+            "actions" : [{
+                "command" : {
+                    "devices" : devices,
+                    "commands" : data
+                }
+            }]
+        }
+        response = self.postRequest(f"https://api.smartthings.com/v1/rules?locationId={LOCATION_ID}", completeData)
+        id = response["id"]
+        return id
 
-        urls = [f"https://api.smartthings.com/v1/devices/{self.device_list[light]}/commands" for light in lights]
-        reqs = (grequests.post(u, json=data,headers=self.headers) for u in urls)
-        grequests.map(reqs)
+    def executeRule(self, id):
+        self.postRequest(f"https://api.smartthings.com/v1/rules/execute/{id}?locationId={LOCATION_ID}", {})
+        requests.delete(f"https://api.smartthings.com/v1/rules/{id}?locationId={LOCATION_ID}", headers=self.headers)
+
+    def purgeRules(self):
+        r = self.getRequest(f"https://api.smartthings.com/v1/rules?locationId={LOCATION_ID}")
+        ids = [x["id"] for x in r["items"]]
+        for id in ids:
+            requests.delete(f"https://api.smartthings.com/v1/rules/{id}?locationId={LOCATION_ID}", headers=self.headers)
+
+    def programLights(self, lights, hue=None, saturation=100, brightness=None):
+        gap = 0.1
+        start = time.time()
+        data = self.formatData(hue, saturation, brightness)
+        devices = [self.device_list[light] for light in lights]
+        id = self.createRule(data, devices)
+        while True:
+            if time.time() > start + self.sync + gap:
+                print("dropped")
+                return
+            if time.time() > start + self.sync:
+                self.executeRule(id)
+                return
+        
 
 lightsa = [[0,1,2],[3,4],[5,6],[7,8],[9,10],[11,12]]
 interval = 1
 
 lights = Lights()
-while True:
-    for index, x in enumerate(lightsa):
-        hue = int(100/13*(index+1))
-        # threading.Thread(target=lights.programLights, args=(x,), kwargs={"brightness":20, "hue":hue}).start()
+lights.programLights([0,1], brightness=5, hue=0)
+#lights.purgeRules()
+# while True:
+#     for index, x in enumerate(lightsa):
+#         hue = int(100/13*(index+1))
+#         # threading.Thread(target=lights.programLights, args=(x,), kwargs={"brightness":20, "hue":hue}).start()
 
-        # threading.Thread(target=lights.programLights, args=(x,), kwargs={"brightness":0, "hue":hue}).start()
-        # time.sleep(interval)
-        lights.programLights(x, brightness=5, hue=hue)
-        lights.programLights(x, brightness=0,)
+#         # threading.Thread(target=lights.programLights, args=(x,), kwargs={"brightness":0, "hue":hue}).start()
+#         # time.sleep(interval)
+#         lights.programLights(x, brightness=5, hue=hue)
+#         lights.programLights(x, brightness=0,)
     
 ##you need to make a rule look into this
