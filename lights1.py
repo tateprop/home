@@ -1,32 +1,42 @@
-
 from multiprocessing import Pool
 import time
 import threading
 import requests
 import random
 import string
+import tinytuya
+import json
 
-TOKEN = 'a4bb4fa8-2510-4a2b-80e5-6c3c47badad5'
-LOCATION_ID = "19b8c253-a92c-4727-8110-bb84808a6402"
+PID = "yyi07qf1sfqnxwaa"
+SPACE = "179494647"
 
 class Lights:
     def __init__(self):
-        self.headers = {"Authorization": f'Bearer {TOKEN}'}
+        self.c = tinytuya.Cloud(
+                    apiRegion="eu", 
+                    apiKey="y5xhr5ct9934cgynk9rp", 
+                    apiSecret="f790c9ac148d458caa3fa7f2f19a195a", 
+                    apiDeviceID="bf41c4b17042f0e49eqzfv")
         self.device_list = self.getDevices()
-        self.sync = 1
-        
-    def getRequest(self, url):
-        return requests.get(url, headers = self.headers).json()
         
     def postRequest(self, url, data):
-        r = requests.post(url, json=data, headers=self.headers)
-        return r.json()
+        print("Again...")
+        print(data)
+        r = self.c.cloudrequest(url, action="POST", post=data)
+        print(f"Bing Bong... {r}")
+        return r
 
+    def getRequest(self, url, data={}):
+        print(data)
+        r = self.c.cloudrequest(url, query=data)
+        print(r)
+        return r
 
     def getDevices(self):
-        url = 'https://api.smartthings.com/v1/devices'
-        devices = self.getRequest(url)
-        devices_parsed = [[device["deviceId"], int(device["label"])] for device in devices["items"]]
+        f = open('tuya-raw.json')
+        data = json.load(f)["result"]
+
+        devices_parsed = [[x["id"], int(x["name"])] for x in data]
         devices_sorted = sorted(devices_parsed,key=lambda l:l[1])
         ids = [device[0] for device in devices_sorted]
         return ids
@@ -58,61 +68,68 @@ class Lights:
                 })
         return data
 
-    def createRule(self, data, devices):
-        name = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10))
+    def createRule(self, devices):
+        name = ''.join(random.choice(string.digits) for _ in range(10))
         completeData = {
-            "name" : name,
-            "actions" : [{
-                "command" : {
-                    "devices" : devices,
-                    "commands" : data
-                }
-            }]
-        }
-        response = self.postRequest(f"https://api.smartthings.com/v1/rules?locationId={LOCATION_ID}", completeData)
-        #print(response)
-        id = response["id"]
-        return id
+                        "space_id": SPACE,
+                        "name": name,
+                        "product_id": PID,
+                        "device_ids": ",".join(devices)
+                        }
+        response = self.postRequest("/v2.0/cloud/thing/group", completeData)
 
     def executeTimedRule(self, *args):
-        #better way!
-        id, start, wait = args[0][0], args[0][1], args[0][2]
+        print(args)
+        id, start, wait, data = args[0][0], args[0][1], args[0][2], args[0][3]
         now = time.time()
         if wait - (start-now) > 0:
             time.sleep(wait - (start-now))
-        self.executeRule(id)
+        self.executeRule(data)
 
-    def executeRule(self, id):
-        self.postRequest(f"https://api.smartthings.com/v1/rules/execute/{id}?locationId={LOCATION_ID}", {})
+    def executeRule(self, data):
+        print("sending....")
+        self.postRequest("/v2.0/cloud/thing/group/properties", data)
 
+    def getGroupIDs(self):
+        data = {
+                "space_id": SPACE,
+                "page_no": 1,
+                "page_size": 20
+                }
+        result = self.getRequest("/v2.0/cloud/thing/group", data)["result"]
+        group_ids = [str(x["id"]) for x in result["data_list"]]
+        return group_ids
     def purgeRules(self):
-        r = self.getRequest(f"https://api.smartthings.com/v1/rules?locationId={LOCATION_ID}")
-        ids = [x["id"] for x in r["items"]]
-        for id in ids:
-            requests.delete(f"https://api.smartthings.com/v1/rules/{id}?locationId={LOCATION_ID}", headers=self.headers)
+        for id in self.getGroupIDs():
+            url = f"/v2.0/cloud/thing/group/{id}"
+            a = self.c.cloudrequest(url, action="DELETE")
+        print("Purged Groups")
 
     def runPattern(self, pattern, rules=None):
         print( pattern["loop"])
-        if rules is None:
-            ids = []
-            for action in pattern["actions"]:
-                hue = action["hue"] if "hue" in action else None
-                saturation = action["saturation"] if "saturation" in action else 100
-                brightness = action["brightness"] if "brightness" in action else None
+        # if rules is None:
+        #     for action in pattern["actions"]:
+        #         hue = action["hue"] if "hue" in action else None
+        #         saturation = action["saturation"] if "saturation" in action else 100
+        #         brightness = action["brightness"] if "brightness" in action else None
 
-                data = self.formatData(hue, saturation, brightness)
-                devices = [self.device_list[light] for light in action["lights"]]
-                id = self.createRule(data, devices)
-                ids.append(id)
-        else:
-            ids = rules
+        #         #data = self.formatData(hue, saturation, brightness)
+        #         devices = [self.device_list[light] for light in action["lights"]]
+        #         self.createRule(devices)
+        #     ids = self.getGroupIDs()
+        # else:
+        #     ids = rules
+        ids = self.getGroupIDs()
         print("Created Rules")
         #testing 
         start = time.time() + 1
-        args = [[ids[x], start, pattern["actions"][x]["time"]] for x in range(len(ids))]
-        with Pool(len(ids)) as p:
-            p.map(self.executeTimedRule, args)
-        
+        data = [{"group_id" : int(ids[x]), "properties": '{"bright_value":100}'} for x in range(len(ids))]
+        args = [[ids[x], start, pattern["actions"][x]["time"], json.dumps(data[x])] for x in range(len(ids))]
+        # with Pool(len(ids)) as p:
+        #     p.map(self.executeTimedRule, args)
+        for arg in args:
+            self.executeTimedRule(arg)
+        print("moved")
         ##add True for infiite
         loops = pattern["loop"]
         if loops:
@@ -133,8 +150,10 @@ class Lights:
 
 
 lights = Lights()
-#lights.programLights([0,1], brightness=5, hue=0)
+# #lights.programLights([0,1], brightness=5, hue=0)
 #lights.purgeRules()
+#lights.getRequest("/v2.0/cloud/space/child")
+lights.getRequest(f"/v2.0/cloud/thing/group/{lights.getGroupIDs()[0]}/properties")
 pattern = {
     "actions" : [
         {"lights":[0,1,2], "brightness":20, "hue":0, "time":1},
@@ -154,6 +173,13 @@ pattern = {
 }
 
 lights.runPattern(pattern)
+
+
+
+####TODO
+#MAKE IT WORK
+
+
 #lights.purgeRules()
 # while True:
 #     for index, x in enumerate(lightsa):
